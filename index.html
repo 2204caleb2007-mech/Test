@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media Analyzer - Ocean Hazards</title>
+    <link rel="stylesheet" href="cta.css">
+    <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+       * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f5f8fa;
+    color: #14171a;
+    line-height: 1.6;
+    scroll-behavior: smooth;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.header-text {
+    margin-top: 0.5rem; !important
+}
+
+.hero {
+    padding: 5.5rem 0;
+    text-align: center;
+    margin-bottom: 2rem;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    background-image: url('https://images.pexels.com/photos/37487/pexels-photo-37487.jpeg?cs=srgb&dl=blue-mac-wallpaper-mobile-wallpaper-37487.jpg&fm=jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white;
+    position: relative;
+}
+
+.hero h1 {
+    font-size: 2.8rem;
+    margin-bottom: 1.5rem;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero p {
+    font-size: 1.3rem;
+    max-width: 700px;
+    margin: 0 auto 2.5rem;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.btn {
+    display: inline-block;
+    background-color: #1da1f2;
+    color: white;
+    padding: 12px 28px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.btn:hover {
+    background-color: #0d8bd9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(29, 161, 242, 0.3);
+}
+
+.btn-ocean {
+    background-color: #0f4c75;
+}
+
+.btn-ocean:hover {
+    background-color: #0a3a5a;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #0f4c75;
+    font-size: 2rem;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.feature-card {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    color: #1da1f2;
+    margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+    margin-bottom: 1rem;
+    color: #14171a;
+}
+
+#hazards {
+    margin-top: -2rem;
+}
+
+.ocean-hazards {
+    background-color: white;
+    padding: 3rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 4rem;
+}
+
+.hazards-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.hazards-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.hazard-card {
+    background-color: #f5f8fa;
+    padding: 1.5rem;
+    border-radius: 10px;
+    border-left: 4px solid #0f4c75;
+}
+
+.hazard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.hazard-title {
+    font-weight: 600;
+    color: #0f4c75;
+    margin-right: 1rem;
+}
+
+.hazard-severity {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.severity-high {
+    background-color: #ffcccc;
+    color: #cc0000;
+}
+
+.severity-medium {
+    background-color: #fff2cc;
+    color: #b38600;
+}
+
+.severity-low {
+    background-color: #d9ead3;
+    color: #38761d;
+}
+
+.hazard-content {
+    margin-bottom: 1rem;
+    color: #657786;
+}
+
+.hazard-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #aab8c2;
+}
+
+/* Modal Styles - Keep for potential other modals */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    color: #1da1f2;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #657786;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #14171a;
+    font-weight: 500;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.form-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.form-footer a {
+    color: #1da1f2;
+    text-decoration: none;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 15px;
+    }
+    
+    .hero {
+        padding: 3rem 0;
+        margin-bottom: 1rem;
+    }
+    
+    .hero h1 {
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        padding: 0 10px;
+    }
+    
+    .hero p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+        padding: 0 10px;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .features {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .feature-card {
+        padding: 1.5rem;
+    }
+    
+    .feature-card h3 {
+        margin-bottom: 1.2rem;
+        padding: 0 0.5rem;
+    }
+    
+    .feature-card p {
+        padding: 0 0.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    #hazards .section-title {
+        margin-top: 3.5rem;
+    }
+    
+    .ocean-hazards {
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .hazards-controls {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .hazards-controls > div {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+    
+    .hazards-controls .btn {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+    
+    #searchHazards {
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+    
+    .hazards-list {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .hazard-card {
+        padding: 1.2rem;
+    }
+    
+    .hazard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .hazard-severity {
+        align-self: flex-start;
+    }
+    
+    .hazard-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .hazard-title {
+        padding: 0 0.8rem;
+        margin-bottom: 1rem;
+    }
+    
+    .hazard-content {
+        padding: 0 0.8rem;
+        margin-bottom: 1rem;
+    }
+    
+    .hazard-meta {
+        padding: 0 0.8rem;
+	}
+    
+    .modal-content {
+        width: 95%;
+        margin: 20px;
+        padding: 1.5rem;
+    }
+    
+    .modal-title {
+        font-size: 1.3rem;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 1.5rem;
+    }
+    
+    .hero p {
+        font-size: 0.9rem;
+    }
+    
+    .section-title {
+        font-size: 1.3rem;
+    }
+    
+    .feature-card {
+        padding: 1.2rem;
+    }
+    
+    .feature-icon {
+        font-size: 2rem;
+    }
+    
+    .ocean-hazards {
+        padding: 1rem;
+    }
+    
+    .hazards-controls > div {
+        justify-content: stretch;
+    }
+    
+    .hazards-controls .btn {
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .hazard-title {
+        padding: 0 0.5rem;
+    }
+    
+    .hazard-content {
+        padding: 0 0.5rem;
+    }
+    
+    .hazard-meta {
+        padding: 0 0.5rem;
+    }
+    
+}
+
+/* Improve touch targets for mobile */
+@media (max-width: 768px) {
+    .btn, 
+    .hazard-card,
+    .feature-card {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    input, select, textarea {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+}
+
+/* Prevent horizontal scrolling */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Improve readability on mobile */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    
+    h1, h2, h3 {
+        line-height: 1.3;
+    }
+}
+		
+		.feature-icon {
+    font-size: 2.5rem;
+    color: #1da1f2;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+}
+		.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Report Hazard button style */
+.btn-report {
+    background-color: #0f4c75;
+}
+
+.btn-report:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+/* Mobile responsive for hero buttons */
+@media (max-width: 768px) {
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .hero-buttons .btn {
+        min-width: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-buttons .btn {
+        min-width: 180px;
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Keep minimal modal styles for other potential modals - removed Auth0 specific styles */
+    </style>
+</head>
+<body>
+    <!-- Header and Navigation will be loaded here by JavaScript -->
+    <div id="header-container"></div>
+    
+<section class="hero" id="home">
+    <div class="container">
+        <h1>Monitor Ocean Hazards Through Social Media</h1>
+        <p>Track and analyze ocean-related hazards extracted from social media platforms. Get real-time alerts, analyze trends, and make data-driven decisions for coastal safety.</p>
+        <div class="hero-buttons">
+            <a href="#hazards" class="btn" id="startMonitoringBtn">Start Monitoring</a>
+            <a href="Recentposts.html#register-complaint" class="btn btn-report" id="reportHazardBtn">Report Hazard!</a>
+        </div>
+    </div>
+</section>
+    
+    <section id="features" class="container">
+        <h2 class="section-title">Key Features</h2>
+        <div class="features">
+<div class="feature-card">
+    <div class="feature-icon"><i class="fas fa-water"></i></div>
+    <h3>Real-time Hazard Detection</h3>
+    <p>Automatically extract and analyze ocean hazard reports from social media platforms in real-time. Get instant alerts for rip currents, algal blooms, tsunamis, and more.</p>
+</div>
+<div class="feature-card">
+    <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+    <h3>Trend Analysis & Predictions</h3>
+    <p>Identify patterns in ocean hazard occurrences and predict future risks based on historical data and environmental factors.</p>
+</div>
+<div class="feature-card">
+    <div class="feature-icon"><i class="fas fa-bell"></i></div>
+    <h3>Custom Alert System</h3>
+    <p>Set up personalized alerts for specific locations, hazard types, or severity levels to stay informed about relevant ocean threats.</p>
+</div>
+        </div>
+    </section>
+    
+    <section id="hazards" class="container">
+        <h2 class="section-title">Ocean Hazards Detection</h2>
+        <div class="ocean-hazards">
+            <div class="hazards-controls">
+                <div>
+                    <button class="btn btn-ocean" id="refreshHazards">Refresh Hazards</button>
+                    <button class="btn" id="filterAll">All</button>
+                    <button class="btn" id="filterHigh">High Severity</button>
+                    <button class="btn" id="filterMedium">Medium Severity</button>
+                    <button class="btn" id="filterLow">Low Severity</button>
+                </div>
+                <div>
+                    <input type="text" id="searchHazards" placeholder="Search hazards..." style="padding: 10px; border-radius: 4px; border: 1px solid #ddd;">
+                </div>
+            </div>
+            
+            <div class="hazards-list" id="hazardsList">
+                <!-- Hazard cards will be dynamically inserted here -->
+            </div>
+        </div>
+    </section>
+    
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Enhance Coastal Safety Monitoring with us?</h2>
+            <p>Join coastal authorities, researchers, and safety organizations using our platform to detect and respond to ocean hazards more effectively.</p>
+            <a href="Recentposts.html" class="btn" id="joinUsBtn">Help us make changes!</a>
+        </div>
+    </section>
+	
+    <!-- Footer will be loaded here by JavaScript -->
+    <div id="footer-container"></div>
+
+    <script>
+        // JavaScript function to load external HTML files
+        function loadComponent(url, elementId) {
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    document.getElementById(elementId).innerHTML = data;
+                    // Execute any scripts in the loaded content
+                    const scripts = document.getElementById(elementId).getElementsByTagName('script');
+                    for (let script of scripts) {
+                        const newScript = document.createElement('script');
+                        if (script.src) {
+                            newScript.src = script.src;
+                        } else {
+                            newScript.textContent = script.textContent;
+                        }
+                        document.head.appendChild(newScript);
+                    }
+                })
+                .catch(error => {
+                    console.error(`Error loading ${url}:`, error);
+                    document.getElementById(elementId).innerHTML = `<p>Error loading component from ${url}</p>`;
+                });
+        }
+
+        // Load header and footer when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load the header/navigation
+            loadComponent('navheader.html', 'header-container');
+            
+            // Load the footer
+            loadComponent('footer.html', 'footer-container');
+            
+            // Continue with existing functionality...
+            // Sample ocean hazards data
+            const oceanHazards = [
+                {
+                    id: 1,
+                    title: "Strong Rip Currents",
+                    content: "Multiple reports of dangerous rip currents along the coast. Beachgoers advised to exercise caution.",
+                    severity: "high",
+                    location: "Marina beach, TN",
+                    timestamp: "2 hours ago",
+                    source: "twitter",
+                },
+                {
+                    id: 2,
+                    title: "Harmful Algal Bloom",
+                    content: "Red tide detected in coastal waters. May cause respiratory irritation and fish kills.",
+                    severity: "medium",
+                    location: "Bay of Bengal",
+                    timestamp: "5 hours ago",
+                    source: "facebook",
+                },
+                {
+                    id: 3,
+                    title: "High Surf Advisory",
+                    content: "Large breaking waves of 8 to 12 feet expected. Dangerous swimming conditions.",
+                    severity: "medium",
+                    location: "Southern Tamilnadu",
+                    timestamp: "1 day ago",
+                    source: "twitter",
+                },
+                {
+                    id: 4,
+                    title: "Marine Heatwave",
+                    content: "Unusually warm ocean temperatures detected. May impact marine ecosystems.",
+                    severity: "low",
+                    location: "Northeast Arabian sea",
+                    timestamp: "2 days ago",
+                    source: "instagram",
+                },
+                {
+                    id: 5,
+                    title: "Tsunami Watch",
+                    content: "Earthquake detected offshore. Tsunami watch issued for coastal areas.",
+                    severity: "high",
+                    location: "Thiruvanandhapuram",
+                    timestamp: "30 minutes ago",
+                    source: "twitter",
+                },
+                {
+                    id: 6,
+                    title: "Oil Spill Report",
+                    content: "Small oil slick spotted near shipping lane. Authorities investigating.",
+                    severity: "medium",
+                    location: "Pulicat lake",
+                    timestamp: "3 hours ago",
+                    source: "facebook",
+                }
+            ];
+
+            // Ocean Hazards functionality
+            const hazardsList = document.getElementById('hazardsList');
+            const refreshHazardsBtn = document.getElementById('refreshHazards');
+            const filterAllBtn = document.getElementById('filterAll');
+            const filterHighBtn = document.getElementById('filterHigh');
+            const filterMediumBtn = document.getElementById('filterMedium');
+            const filterLowBtn = document.getElementById('filterLow');
+            const searchHazardsInput = document.getElementById('searchHazards');
+
+            let currentHazards = [...oceanHazards];
+            let currentFilter = 'all';
+            let currentSearch = '';
+
+            // Function to render hazards
+            function renderHazards() {
+                hazardsList.innerHTML = '';
+                
+                const filteredHazards = currentHazards.filter(hazard => {
+                    // Apply severity filter
+                    if (currentFilter !== 'all' && hazard.severity !== currentFilter) {
+                        return false;
+                    }
+                    
+                    // Apply search filter
+                    if (currentSearch && !hazard.title.toLowerCase().includes(currentSearch.toLowerCase()) && 
+                        !hazard.content.toLowerCase().includes(currentSearch.toLowerCase()) &&
+                        !hazard.location.toLowerCase().includes(currentSearch.toLowerCase())) {
+                        return false;
+                    }
+                    
+                    return true;
+                });
+                
+                if (filteredHazards.length === 0) {
+                    hazardsList.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: #657786;">No ocean hazards found matching your criteria.</p>';
+                    return;
+                }
+                
+                filteredHazards.forEach(hazard => {
+                    const hazardCard = document.createElement('div');
+                    hazardCard.className = 'hazard-card';
+                    
+                    hazardCard.innerHTML = `
+                    <div class="hazard-header">
+                        <div class="hazard-title">${hazard.title}</div>
+                        <div class="hazard-severity severity-${hazard.severity}">${hazard.severity.toUpperCase()}</div>
+                    </div>
+                    <div class="hazard-content">${hazard.content}</div>
+                    <div class="hazard-meta">
+                        <div><i class="fas fa-map-marker-alt"></i> ${hazard.location}</div>
+                        <div class="hazard-source">
+                            <span></span>
+                            <span>${hazard.timestamp}</span>
+                        </div>
+                    </div>
+                    `;
+                    
+                    hazardsList.appendChild(hazardCard);
+                });
+            }
+
+            // Event listeners for filters
+            filterAllBtn.addEventListener('click', () => {
+                currentFilter = 'all';
+                renderHazards();
+            });
+
+            filterHighBtn.addEventListener('click', () => {
+                currentFilter = 'high';
+                renderHazards();
+            });
+
+            filterMediumBtn.addEventListener('click', () => {
+                currentFilter = 'medium';
+                renderHazards();
+            });
+
+            filterLowBtn.addEventListener('click', () => {
+                currentFilter = 'low';
+                renderHazards();
+            });
+
+            // Event listener for search
+            searchHazardsInput.addEventListener('input', (e) => {
+                currentSearch = e.target.value;
+                renderHazards();
+            });
+
+            // Event listener for refresh
+            refreshHazardsBtn.addEventListener('click', () => {
+                // In a real app, this would fetch new data from an API
+                // For demo purposes, we'll just shuffle the existing data
+                currentHazards = [...oceanHazards].sort(() => Math.random() - 0.5);
+                renderHazards();
+                
+                // Show a notification
+                alert('Ocean hazards data refreshed!');
+            });
+
+            // Initialize the page
+            renderHazards();
+
+            // Enhanced smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        // Calculate offset (adjust 80 based on your header height)
+                        const offsetTop = targetElement.offsetTop - 80;
+                        
+                        window.scrollTo({
+                            top: offsetTop,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Update URL without jumping
+                        history.pushState(null, null, targetId);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
