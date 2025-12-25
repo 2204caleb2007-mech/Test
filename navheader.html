@@ -596,8 +596,8 @@
     <script>
         // Auth0 Configuration
         const auth0Config = {
-            domain: 'dev-zn25vvwnmwiq17fg.us.auth0.com', // Replace with your Auth0 domain
-            clientId: 'dfAxAyEzploSphKaubA1ZPwWKUCfviFm', // Replace with your Auth0 client ID
+            domain: 'dev-zn25vvwnmwiq17fg.us.auth0.com',
+            clientId: 'dfAxAyEzploSphKaubA1ZPwWKUCfviFm',
             authorizationParams: {
                 redirect_uri: 'http://localhost:3000'
             },
@@ -653,7 +653,7 @@
             
             if (isAuthenticated) {
                 // User is logged in
-                loginBtn.style.display = 'none';
+                if (loginBtn) loginBtn.style.display = 'none';
                 
                 // Create user profile section if it doesn't exist
                 if (!userProfile) {
@@ -667,7 +667,7 @@
                 
             } else {
                 // User is not logged in
-                loginBtn.style.display = 'inline-block';
+                if (loginBtn) loginBtn.style.display = 'inline-block';
                 if (userProfile) {
                     userProfile.style.display = 'none';
                 }
@@ -677,6 +677,8 @@
         // Create user profile section
         function createUserProfile() {
             const nav = document.querySelector('nav ul');
+            if (!nav) return;
+            
             const userProfileHTML = `
                 <li id="userProfile" class="user-profile">
                     <img class="user-avatar" id="userAvatar" src="" alt="User Avatar">
@@ -764,8 +766,8 @@
             }
         }
 
-        // Mobile dropdown functionality from index.html
-        document.addEventListener('DOMContentLoaded', async function() {
+        // Initialize everything when the header is loaded
+        function initHeader() {
             const mobileDropdown = document.getElementById('mobileNavDropdown');
             
             if (mobileDropdown) {
@@ -789,7 +791,7 @@
                     }
                 });
             }
-                
+            
             // Enhanced smooth scrolling for anchor links
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
@@ -815,10 +817,10 @@
             });
             
             // Initialize Auth0
-            await initializeAuth0();
-            
-            // Handle auth callback if we're returning from redirect
-            await handleAuthCallback();
+            initializeAuth0().then(() => {
+                // Handle auth callback if we're returning from redirect
+                handleAuthCallback();
+            });
             
             // Add event listeners for auth buttons in modal
             document.getElementById('loginWithGitHub')?.addEventListener('click', () => login('github'));
@@ -849,7 +851,16 @@
                     login('email');
                 }
             });
-        });
+        }
+
+        // Initialize when script loads (for standalone navheader.html)
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initHeader);
+        } else {
+            initHeader();
+        }
+        // Export initHeader function for external call
+        window.initHeader = initHeader;
     </script>
 </body>
 </html>

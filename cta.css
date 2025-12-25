@@ -1,0 +1,71 @@
+/* navbar.css - Complete navigation styles based on index.html */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #f5f8fa;
+    color: #14171a;
+    line-height: 1.6;
+    scroll-behavior: smooth;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.cta {
+    background: linear-gradient(135deg, #1da1f2, #0f4c75);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+    border-radius: 10px;
+    margin-bottom: 0;
+}
+
+.cta h2 {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+}
+
+.cta p {
+    max-width: 700px;
+    margin: 0 auto 2rem;
+    font-size: 1.1rem;
+}
+    
+@media (max-width: 768px){
+    .cta h2 {
+        font-size: 1.5rem;
+        padding: 0 10px;
+    }
+    
+    .cta p {
+        font-size: 1rem;
+        padding: 0 10px;
+    }
+	
+	.cta {
+        padding: 2.5rem 0;
+        margin-bottom: 0;
+    }
+}
+
+@media (max-width: 480px) {	
+	    .cta {
+        padding: 2rem 0.5rem;
+        margin-bottom: 0;
+    }
+    
+    .cta h2 {
+        font-size: 1.4rem;
+    }
+    
+    .cta p {
+        font-size: 0.9rem;
+    }
+}
