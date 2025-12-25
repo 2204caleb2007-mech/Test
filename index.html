@@ -26,7 +26,7 @@
         .hero-section {
             position: relative;
             width: 100%;
-            height: 100vh;
+            height: 82vh;
             overflow: hidden;
         }
         
@@ -314,14 +314,14 @@
     <section class="hero-section" id="home">
         <!-- YouTube video as background -->
         <div class="video-background">
-            <iframe 
-                src="https://youtu.be/8U_nLVItqdw?si=S6TSGKMh3lpIwwoA" 
-                frameborder="0" 
-                allow="autoplay; encrypted-media" 
-                allowfullscreen
-                style="width: 100%; height: 100%; object-fit: cover;">
-            </iframe>
-        </div>
+    <iframe 
+        src="https://www.youtube.com/embed/8U_nLVItqdw?autoplay=1&mute=1&controls=0&loop=1&playlist=8U_nLVItqdw&modestbranding=1&rel=0" 
+        frameborder="0" 
+        allow="autoplay; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen
+        style="width: 100%; height: 100%; object-fit: cover;">
+    </iframe>
+</div>
         <div class="video-overlay"></div>
         <div class="hero-content container mx-auto px-4 md:px-6">
             <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white drop-shadow-lg">Monitor Ocean Hazards Through Social Media</h1>
@@ -334,7 +334,7 @@
     </section>
     
     <section id="features" class="container mx-auto px-4 md:px-6 py-16">
-        <h2 class="section-title my-12">Key Features</h2>
+        <h2 class="section-title my-10">Key Features</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-water"></i></div>
@@ -457,15 +457,15 @@
     </section>
     
     <section class="cta">
-        <div class="container mx-auto px-4 md:px-6 text-center">
-            <h2>Ready to Enhance Coastal Safety Monitoring with us?</h2>
-            <p>Join coastal authorities, researchers, and safety organizations using our platform to detect and respond to ocean hazards more effectively.</p>
-            <a href="Recentposts.html" class="btn" id="joinUsBtn">Help us make changes!</a>
-        </div>
-    </section>
-    
-    <!-- Footer will be loaded here by JavaScript -->
-    <div id="footer-container"></div>
+    <div class="container mx-auto px-4 md:px-6 text-center">
+        <h2 class="section-title" style="color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Ready to Enhance Coastal Safety Monitoring with us?</h2>
+        <p>Join coastal authorities, researchers, and safety organizations using our platform to detect and respond to ocean hazards more effectively.</p>
+        <a href="Recentposts.html" class="btn" id="joinUsBtn">Help us make changes!</a>
+    </div>
+</section>
+
+<div id="floating-button-container"></div>
+<div id="footer-container"></div>
 
     <script>
         // JavaScript function to load external HTML files
@@ -514,6 +514,9 @@
             
             // Load the footer
             loadComponent('footer.html', 'footer-container');
+
+            // Load the floating button
+            loadComponent('button.html', 'floating-button-container');
             
             // Initialize variables
             const refreshWeatherBtn = document.getElementById('refreshWeather');
@@ -1021,6 +1024,47 @@
                 });
             });
         });
+        // Add event delegation for the floating button
+document.addEventListener('click', function(e) {
+    // Check if settings toggle was clicked
+    if (e.target.closest('#settingsToggle') || e.target.id === 'settingsToggle') {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Settings toggle clicked via delegation');
+        
+        const settingsPanel = document.getElementById('settingsPanel');
+        if (settingsPanel) {
+            settingsPanel.classList.toggle('active');
+            console.log('Panel toggled via delegation');
+        }
+    }
+    
+    // Check if close button was clicked
+    if (e.target.closest('#closeSettings') || e.target.id === 'closeSettings') {
+        const settingsPanel = document.getElementById('settingsPanel');
+        if (settingsPanel) {
+            settingsPanel.classList.remove('active');
+        }
+    }
+});
+
+// Also check on page load and after a delay
+setTimeout(() => {
+    console.log('Checking for button elements after delay...');
+    const toggle = document.getElementById('settingsToggle');
+    const panel = document.getElementById('settingsPanel');
+    
+    if (toggle) {
+        console.log('Found toggle, adding direct listener');
+        toggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            console.log('Direct listener fired!');
+            if (panel) {
+                panel.classList.toggle('active');
+            }
+        });
+    }
+}, 3000);
     </script>
 </body>
 </html>

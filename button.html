@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floating Control Button</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: transparent;
+        }
+        
+        /* Floating Control Button */
+        .floating-control-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* Main Button Container */
+        .control-btn-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #1a1b30 0%, #0f4c75 100%);
+            padding: 12px 20px;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        /* Outer Glow Effect */
+        .control-btn-glow {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(135deg, #74c1ed 0%, #3B82F6 100%);
+            border-radius: 55px;
+            z-index: -1;
+            opacity: 0.7;
+            filter: blur(10px);
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        
+        /* Inner Circles */
+        .control-icon-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .settings-circle {
+            margin-right: 15px;
+            color: #74c1ed;
+        }
+        
+        .home-circle {
+            margin-left: 15px;
+            color: #ffffff;
+        }
+        
+        .control-icon-circle i {
+            font-size: 1.2rem;
+        }
+        
+        /* Button Text */
+        .control-btn-text {
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        
+        /* Hover Effects */
+        .control-btn-container:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .control-btn-container:hover .control-icon-circle {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .control-btn-container:hover .control-btn-glow {
+            opacity: 0.9;
+        }
+        
+        /* Settings Panel */
+        .settings-panel {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            background: rgba(26, 27, 48, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            width: 280px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(116, 193, 237, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 10000;
+        }
+        
+        .settings-panel.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        /* Settings Panel Header */
+        .settings-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .settings-title {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .settings-title i {
+            color: #74c1ed;
+        }
+        
+        .close-settings {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .close-settings:hover {
+            color: #74c1ed;
+        }
+        
+        /* Settings Options */
+        .settings-option {
+            margin-bottom: 20px;
+        }
+        
+        .option-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .option-label span {
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        
+        .option-label i {
+            color: #74c1ed;
+            margin-right: 8px;
+        }
+        
+        /* Dark Mode Toggle */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #2d3748;
+            border-radius: 34px;
+            transition: .4s;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            border-radius: 50%;
+            transition: .4s;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #74c1ed;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .language-btn {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .language-btn:hover {
+            background: rgba(116, 193, 237, 0.2);
+            border-color: #74c1ed;
+        }
+        
+        .language-btn.active {
+            background: #74c1ed;
+            border-color: #74c1ed;
+            font-weight: 600;
+        }
+        
+        /* Footer Note */
+        .settings-footer {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.8rem;
+        }
+        
+        /* Animations */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% {
+                opacity: 0.5;
+                filter: blur(8px);
+            }
+            50% {
+                opacity: 0.8;
+                filter: blur(12px);
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .floating-control-btn {
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .control-btn-container {
+                padding: 10px 15px;
+            }
+            
+            .control-icon-circle {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .control-btn-text {
+                font-size: 0.9rem;
+            }
+            
+            .settings-panel {
+                width: 260px;
+                right: -10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .floating-control-btn {
+                bottom: 15px;
+                right: 15px;
+            }
+            
+            .control-btn-text {
+                display: none;
+            }
+            
+            .control-btn-container {
+                padding: 10px;
+            }
+            
+            .settings-circle, .home-circle {
+                margin: 0 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Control Button -->
+    <div class="floating-control-btn">
+        <div class="control-btn-glow"></div>
+        <div class="control-btn-container">
+            <!-- Settings Circle (Left) -->
+            <div class="control-icon-circle settings-circle" id="settingsToggle">
+                <i class="fas fa-cog"></i>
+            </div>
+            <!-- Home Circle (Right) -->
+            <a href="index.html" class="control-icon-circle home-circle">
+                <i class="fas fa-home"></i>
+            </a>
+            
+            <!-- Settings Panel -->
+            <div class="settings-panel" id="settingsPanel">
+                <div class="settings-header">
+                    <div class="settings-title">
+                        <i class="fas fa-sliders-h"></i>
+                        <span>Settings</span>
+                    </div>
+                    <button class="close-settings" id="closeSettings">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <!-- Dark Mode Toggle -->
+                <div class="settings-option">
+                    <div class="option-label">
+                        <span><i class="fas fa-moon"></i> Dark Mode</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <!-- Language Selector -->
+                <div class="settings-option">
+                    <div class="option-label">
+                        <span><i class="fas fa-globe"></i> Language</span>
+                    </div>
+                    <div class="language-selector">
+                        <button class="language-btn active" data-lang="en">English</button>
+                        <button class="language-btn" data-lang="es">Tamil</button>
+                        <button class="language-btn" data-lang="fr">Hindi</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const settingsToggle = document.getElementById('settingsToggle');
+            const settingsPanel = document.getElementById('settingsPanel');
+            const closeSettings = document.getElementById('closeSettings');
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const languageButtons = document.querySelectorAll('.language-btn');
+            
+            // Toggle settings panel
+            settingsToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                settingsPanel.classList.toggle('active');
+            });
+            
+            // Close settings panel
+            closeSettings.addEventListener('click', function() {
+                settingsPanel.classList.remove('active');
+            });
+            
+            // Close settings panel when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!settingsPanel.contains(e.target) && !settingsToggle.contains(e.target)) {
+                    settingsPanel.classList.remove('active');
+                }
+            });
+            
+            // Dark mode toggle functionality
+            darkModeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    document.body.classList.add('dark-mode');
+                    localStorage.setItem('darkMode', 'enabled');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    localStorage.setItem('darkMode', 'disabled');
+                }
+            });
+            
+            // Check for saved dark mode preference
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                darkModeToggle.checked = true;
+                document.body.classList.add('dark-mode');
+            }
+            
+            // Language selector functionality
+            languageButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    languageButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Get selected language
+                    const selectedLang = this.getAttribute('data-lang');
+                    localStorage.setItem('preferredLanguage', selectedLang);
+                    
+                    // Show feedback (in a real app, this would change the language)
+                    const buttonText = this.textContent;
+                    alert(`Language changed to ${buttonText}. In a full implementation, this would translate the entire page.`);
+                    
+                    // Close settings panel after selection
+                    setTimeout(() => {
+                        settingsPanel.classList.remove('active');
+                    }, 500);
+                });
+            });
+            
+            // Check for saved language preference
+            const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+            languageButtons.forEach(button => {
+                if (button.getAttribute('data-lang') === savedLang) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+            
+            // Add some CSS for dark mode (if you want to apply it to the parent page)
+            const darkModeStyles = `
+                body.dark-mode {
+                    background-color: #121212;
+                    color: #ffffff;
+                }
+            `;
+            
+            // Create style element for dark mode
+            const styleEl = document.createElement('style');
+            styleEl.textContent = darkModeStyles;
+            document.head.appendChild(styleEl);
+        });
+    </script>
+</body>
+</html>
